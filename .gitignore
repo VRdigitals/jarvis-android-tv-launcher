@@ -6,6 +6,7 @@ keystore/
 assets/*
 !assets/README.md
 !assets/arc_reactor.png
+!assets/wallpaper.jpg
 voice/recorded/*
 !voice/recorded/.gitkeep
 

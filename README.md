@@ -24,7 +24,8 @@ when you select something. No ads, no "recommended for you" rows, no tracking.
   Wi-Fi, Bluetooth, picture and sound settings.
 - **Smooth on modest TV hardware**: only transforms and fades animate, and nothing animates while
   you're not moving.
-- **Built-in fallbacks**: works out of the box; add your own wallpaper, avatar and voice if you like.
+- **Ready to go**: ships with a hologram wallpaper and arc-reactor avatar; swap in your own, and
+  add your own assistant voice.
 
 ## Requirements
 
