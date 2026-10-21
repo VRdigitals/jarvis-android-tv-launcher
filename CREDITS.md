@@ -1,7 +1,7 @@
 # Credits
 
 - **Start-up intro** (`res/raw/intro.mp4`): made by VR Digitals with Google Flow and CapCut, for this project.
-  Includes HUD elements by [@GMCFILES_HUD](https://www.instagram.com/gmcfiles_hud/) (watermark visible). A fully original
+  Includes HUD elements by @GMCFILES_HUD (watermark visible). A fully original
   intro will replace it in a later version.
 - **Wallpaper** (`assets/wallpaper.jpg`): AI-generated hologram over Earth, by VR Digitals.
 - **Arc reactor image** (`assets/arc_reactor.png`): AI-generated for this project by VR Digitals.
