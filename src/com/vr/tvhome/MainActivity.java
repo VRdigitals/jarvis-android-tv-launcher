@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
     };
 
     private ImageView weatherIcon;
-    private TextView weatherTemp, weatherDesc, weatherRange;
+    private TextView weatherCity, weatherTemp, weatherDesc, weatherRange;
     private LinearLayout featuredRow, appsPanelRow, inputsRow, allAppsGrid;
     private HorizontalScrollView featuredScroll;
     private View homePage, appsPage;
@@ -424,7 +424,8 @@ public class MainActivity extends Activity {
         text.setPadding(dp(12), 0, 0, 0);
         TextView label = new TextView(this);
         style(label, 10, "sans-serif-medium", TEXT_DIM);
-        label.setText(Config.WEATHER_CITY);
+        label.setText(Config.WEATHER_CITY.isEmpty() ? "Weather" : Config.WEATHER_CITY);
+        weatherCity = label;
         weatherTemp = new TextView(this);
         style(weatherTemp, 28, "sans-serif-light", Color.WHITE);
         weatherTemp.setIncludeFontPadding(false);
@@ -444,6 +445,7 @@ public class MainActivity extends Activity {
 
     private void showWeather(Weather w) {
         weatherIcon.setImageDrawable(Icons.of(w.icon(), Color.WHITE));
+        if (!w.city.isEmpty()) weatherCity.setText(w.city);
         weatherTemp.setText(w.temp + "°C");
         weatherDesc.setText(w.description());
         weatherRange.setText("H: " + w.high + "°   L: " + w.low + "°");

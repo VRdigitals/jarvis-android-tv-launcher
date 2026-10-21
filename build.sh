@@ -19,6 +19,7 @@ JAR="$SDK/platforms/android-34/android.jar"
 BT=$(ls -d "$SDK"/build-tools/3[4-9]* 2>/dev/null | sort -V | tail -1)
 [[ -n "$BT" ]] || { echo "Android build-tools 34+ not found (sdkmanager \"build-tools;34.0.0\")."; exit 1; }
 VERSION_CODE=${VERSION_CODE:-$(date +%y%m%d%H%M | cut -c1-9)}
+VERSION_NAME=${VERSION_NAME:-1.0.$VERSION_CODE}
 
 rm -rf build && mkdir -p build/gen build/classes build/dex
 
@@ -27,7 +28,7 @@ echo "1/5 resources"
 # -0 m4a: voice clips stay uncompressed so SoundPool can play them straight from the APK
 "$BT/aapt2" link -o build/unsigned.apk -I "$JAR" --manifest AndroidManifest.xml -A assets -0 m4a \
   --java build/gen --min-sdk-version 31 --target-sdk-version 34 \
-  --version-code "$VERSION_CODE" --version-name "1.0.$VERSION_CODE" build/res.zip
+  --version-code "$VERSION_CODE" --version-name "$VERSION_NAME" build/res.zip
 
 echo "2/5 java"
 # --release 11 + android.jar on the classpath: java.* comes from the JDK (d8 desugars lambdas)

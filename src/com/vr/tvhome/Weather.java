@@ -10,18 +10,25 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/** Current weather from Open-Meteo (free, no key). Last result is cached for offline starts. */
+/**
+ * Current weather from Open-Meteo (free, no key). The place comes from Config, or, if
+ * Config.WEATHER_CITY is empty, from the internet connection's approximate location (ipapi.co,
+ * city level, looked up at most once a week). Last result is cached for offline starts.
+ */
 public final class Weather {
-    private static final String URL_STR = "https://api.open-meteo.com/v1/forecast"
-            + "?latitude=" + Config.WEATHER_LAT + "&longitude=" + Config.WEATHER_LON
-            + "&current=temperature_2m,weather_code,is_day"
+    private static final String FORECAST = "https://api.open-meteo.com/v1/forecast"
+            + "?current=temperature_2m,weather_code,is_day"
             + "&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto";
+    private static final String LOCATE = "https://ipapi.co/json/";
+    private static final long RELOCATE_MS = 7L * 24 * 60 * 60_000;
     private static final String PREFS = "weather";
 
+    public final String city;
     public final int temp, high, low, code;
     public final boolean day;
 
-    private Weather(int temp, int high, int low, int code, boolean day) {
+    private Weather(String city, int temp, int high, int low, int code, boolean day) {
+        this.city = city;
         this.temp = temp;
         this.high = high;
         this.low = low;
@@ -31,19 +38,14 @@ public final class Weather {
 
     /** Blocking network call; run off the main thread. Returns null on failure. */
     public static Weather fetch(Context ctx) {
-        HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) new URL(URL_STR).openConnection();
-            conn.setConnectTimeout(8000);
-            conn.setReadTimeout(8000);
-            try (InputStream in = conn.getInputStream()) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte[] buf = new byte[4096];
-                for (int n; (n = in.read(buf)) > 0; ) out.write(buf, 0, n);
-                JSONObject json = new JSONObject(out.toString("UTF-8"));
+            String[] place = place(ctx);
+            if (place == null) return null;
+            JSONObject json = getJson(FORECAST + "&latitude=" + place[1] + "&longitude=" + place[2]);
+            {
                 JSONObject cur = json.getJSONObject("current");
                 JSONObject daily = json.getJSONObject("daily");
-                Weather w = new Weather(
+                Weather w = new Weather(place[0],
                         (int) Math.round(cur.getDouble("temperature_2m")),
                         (int) Math.round(daily.getJSONArray("temperature_2m_max").getDouble(0)),
                         (int) Math.round(daily.getJSONArray("temperature_2m_min").getDouble(0)),
@@ -54,21 +56,55 @@ public final class Weather {
             }
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /** {city, lat, lon}: from Config, or detected from the connection and cached for a week. */
+    private static String[] place(Context ctx) throws Exception {
+        if (!Config.WEATHER_CITY.isEmpty()) {
+            return new String[]{Config.WEATHER_CITY, String.valueOf(Config.WEATHER_LAT), String.valueOf(Config.WEATHER_LON)};
+        }
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (System.currentTimeMillis() - p.getLong("locAt", 0) > RELOCATE_MS) {
+            try {
+                JSONObject loc = getJson(LOCATE);
+                p.edit().putString("locCity", loc.getString("city"))
+                        .putString("locLat", String.valueOf(loc.getDouble("latitude")))
+                        .putString("locLon", String.valueOf(loc.getDouble("longitude")))
+                        .putLong("locAt", System.currentTimeMillis()).apply();
+            } catch (Exception e) {
+                // keep any earlier location
+            }
+        }
+        if (!p.contains("locLat")) return null;
+        return new String[]{p.getString("locCity", ""), p.getString("locLat", "0"), p.getString("locLon", "0")};
+    }
+
+    private static JSONObject getJson(String url) throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        conn.setConnectTimeout(8000);
+        conn.setReadTimeout(8000);
+        conn.setRequestProperty("User-Agent", "JarvisTVLauncher/1.0");
+        try (InputStream in = conn.getInputStream()) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            for (int n; (n = in.read(buf)) > 0; ) out.write(buf, 0, n);
+            return new JSONObject(out.toString("UTF-8"));
         } finally {
-            if (conn != null) conn.disconnect();
+            conn.disconnect();
         }
     }
 
     public static Weather cached(Context ctx) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (!p.contains("temp")) return null;
-        return new Weather(p.getInt("temp", 0), p.getInt("high", 0), p.getInt("low", 0),
+        return new Weather(p.getString("city", ""), p.getInt("temp", 0), p.getInt("high", 0), p.getInt("low", 0),
                 p.getInt("code", 0), p.getBoolean("day", true));
     }
 
     private void save(Context ctx) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                .putInt("temp", temp).putInt("high", high).putInt("low", low)
+                .putString("city", city).putInt("temp", temp).putInt("high", high).putInt("low", low)
                 .putInt("code", code).putBoolean("day", day).apply();
     }
 

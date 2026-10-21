@@ -39,7 +39,31 @@ when you select something. No ads, no "recommended for you" rows, no tracking.
 
 No Gradle and no Android Studio needed: `build.sh` uses the SDK tools directly.
 
-## Easiest: set up with Claude Code
+## Quick install, no computer needed
+
+1. On the TV, install **Downloader** (by AFTVnews) from the Play Store.
+2. Let it install apps: *Settings → Apps → Security & restrictions → Unknown sources* → turn on
+   **Downloader** (or allow it when Downloader asks).
+3. Open Downloader, enter this address and install:
+   ```
+   https://github.com/VRdigitals/jarvis-android-tv-launcher/releases/latest/download/jarvis-tv-launcher.apk
+   ```
+4. Make the Home button open it: *Settings → System → Accessibility → **TV Home*** → turn it on.
+   (Android 13+: if it's greyed out, go to *Settings → Apps → TV Home* → ⋮ → *Allow restricted
+   settings*, then try again.)
+5. **TCL TVs**: open the **Safety Guard** app and allow **TV Home** to auto-start (look for
+   *Auto-start* or *Permission management*). Without this, Home stops opening it after a restart.
+6. Press **Home** on the remote.
+
+Good to know:
+- The weather finds your city automatically (approximate, from your internet connection).
+- To change the featured apps, voice or wallpaper, use the computer setup below.
+- If animations feel stiff, check *Developer options → Animator duration scale* is **1x**.
+- To remove it: turn TV Home off in Accessibility, then *Settings → Apps → TV Home → Uninstall*.
+- A computer install signs the app with its own key, so to switch between the downloaded app and
+  your own build, uninstall the other one first.
+
+## Easiest with a computer: set up with Claude Code
 
 Open this folder in [Claude Code](https://claude.com/claude-code) and say **"set up the launcher
 on my TV"**. Following [CLAUDE.md](CLAUDE.md), Claude:
@@ -66,7 +90,7 @@ on my TV"**. Following [CLAUDE.md](CLAUDE.md), Claude:
 
 | What | Where |
 |---|---|
-| Weather city | `src/com/vr/tvhome/Config.java`: `WEATHER_CITY`, `WEATHER_LAT`, `WEATHER_LON` |
+| Weather city | Detected automatically. To fix one, set `WEATHER_CITY`, `WEATHER_LAT`, `WEATHER_LON` in `src/com/vr/tvhome/Config.java` |
 | Featured apps | `Config.java` → `FEATURED` (package names + subtitles) |
 | What the assistant says | `voice/lines.txt` |
 | Assistant voice | Included in `voice/recorded/`. Replace or add `<key>.mp3` files (names from `voice/lines.txt`); lines without a recording appear as text only, or use a macOS voice for them: `VOICE=Daniel ./make_voice.sh` |
