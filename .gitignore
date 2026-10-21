@@ -2,12 +2,10 @@
 build/
 keystore/
 
-# Personal files: wallpaper, avatar, voice (see assets/README.md)
+# Your own files in assets/ (see assets/README.md); the generated voice pack
 assets/*
 !assets/README.md
 !assets/arc_reactor.png
 !assets/wallpaper.jpg
-voice/recorded/*
-!voice/recorded/.gitkeep
 
 .DS_Store

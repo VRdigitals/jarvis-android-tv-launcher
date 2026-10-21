@@ -9,6 +9,8 @@ ADB=$(command -v adb || echo "$HOME/platform-tools/adb")
 [[ -x "$ADB" ]] || { echo "adb not found. Install Android platform-tools."; exit 1; }
 SERVICE=com.vr.tvhome/com.vr.tvhome.HomeOverrideService
 
+# Build the assistant's voice pack from voice/recorded if it hasn't been made yet
+[[ -f assets/voice/index.txt ]] || ./make_voice.sh
 ./build.sh
 "$ADB" connect "$TV" >/dev/null
 if [[ $("$ADB" -s "$TV" get-state 2>/dev/null) != device ]]; then

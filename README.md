@@ -24,8 +24,8 @@ when you select something. No ads, no "recommended for you" rows, no tracking.
   Wi-Fi, Bluetooth, picture and sound settings.
 - **Smooth on modest TV hardware**: only transforms and fades animate, and nothing animates while
   you're not moving.
-- **Ready to go**: ships with a hologram wallpaper and arc-reactor avatar; swap in your own, and
-  add your own assistant voice.
+- **Ready to go**: ships with a hologram wallpaper, an arc-reactor avatar and an AI-generated
+  assistant voice; swap in your own if you like.
 
 ## Requirements
 
@@ -69,11 +69,11 @@ on my TV"**. Following [CLAUDE.md](CLAUDE.md), Claude:
 | Weather city | `src/com/vr/tvhome/Config.java`: `WEATHER_CITY`, `WEATHER_LAT`, `WEATHER_LON` |
 | Featured apps | `Config.java` → `FEATURED` (package names + subtitles) |
 | What the assistant says | `voice/lines.txt` |
-| Assistant voice | Your recordings in `voice/recorded/<key>.mp3`, or a macOS voice: `VOICE=Daniel ./make_voice.sh` |
+| Assistant voice | Included in `voice/recorded/`. Replace or add `<key>.mp3` files (names from `voice/lines.txt`); lines without a recording appear as text only, or use a macOS voice for them: `VOICE=Daniel ./make_voice.sh` |
 | Wallpaper / avatar | `assets/wallpaper.jpg`, `assets/arc_reactor.png` (see `assets/README.md`) |
 | Start-up intro | Replace `res/raw/intro.mp4` (1080p H.264 + AAC recommended) |
 
-After any change: `./make_voice.sh` (only if you changed the voice) and then `./install.sh <tv-ip>`.
+After any change: `./make_voice.sh` (only if you changed the voice; `install.sh` builds it the first time) and then `./install.sh <tv-ip>`.
 
 Please only use voices you have the right to use: **don't clone a real person's voice** without
 their permission.

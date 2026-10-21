@@ -31,8 +31,9 @@ Ask the user to do this with the remote (you can't):
 - Favourite apps → list installed apps with `adb -s <tv> shell pm list packages -3` and update
   `FEATURED` in `Config.java` (keep 4–6).
 - Wallpaper → `assets/wallpaper.jpg` (1920×1080). Avatar → `assets/arc_reactor.png` (included).
-- Voice → their recordings in `voice/recorded/<key>.mp3` (names from `voice/lines.txt`), or a
-  macOS voice: `VOICE=Daniel ./make_voice.sh`. Don't help clone a real person's voice.
+- Voice → an AI voice pack is included in `voice/recorded/`. They can replace files with their own
+  recordings (`<key>.mp3`, names from `voice/lines.txt`) or fill gaps with a macOS voice:
+  `VOICE=Daniel ./make_voice.sh`. Don't help clone a real person's voice.
 - Intro → replace `res/raw/intro.mp4` (convert to 1080p H.264 with
   `avconvert --preset Preset1920x1080` if needed).
 
