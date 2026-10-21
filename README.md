@@ -7,6 +7,12 @@ when you select something. No ads, no "recommended for you" rows, no tracking.
 > Fan-made project. Not affiliated with or endorsed by Marvel, Disney, Google or any TV maker.
 > No Marvel artwork, audio or video is included.
 
+![Home screen with the assistant speaking](docs/screenshots/home.jpg)
+
+![Selected tiles get a 3D blue glow; the assistant offers a suggestion](docs/screenshots/inputs.jpg)
+
+**[Download the latest release](https://github.com/VRdigitals/jarvis-android-tv-launcher/releases/latest)**
+
 ## Features
 
 - **Home screen**: clock and date, live weather, Featured app cards, an Apps panel with an
