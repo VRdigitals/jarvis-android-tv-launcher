@@ -1,0 +1,12 @@
+# Build output and your signing key
+build/
+keystore/
+
+# Personal files: wallpaper, avatar, voice (see assets/README.md)
+assets/*
+!assets/README.md
+!assets/arc_reactor.png
+voice/recorded/*
+!voice/recorded/.gitkeep
+
+.DS_Store

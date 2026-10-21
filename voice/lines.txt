@@ -1,0 +1,30 @@
+# What the assistant says. Format: key|text   (edit freely, then ./make_voice.sh && ./install.sh <tv-ip>)
+#
+# app.<package>  : said when that app's Featured card stays selected
+# input.<kind>   : said when you switch input (hdmi, av, tv, usb)
+# idle.<package> : said after 15 s without a button press; OK on the assistant card opens that app
+# sys.*          : other moments
+#
+# Record your own audio as voice/recorded/<key>.mp3 (or .wav/.m4a), or use a macOS voice:
+#   VOICE=Daniel ./make_voice.sh
+
+app.com.netflix.ninja|Aww. I do like the Netflix intro animation.
+app.com.amazon.amazonvideo.livingroom|Good choice, Prime. Did you renew your membership?
+app.com.disney.disneyplus|Disney plus. Something for everyone tonight.
+app.in.startv.hotstar|Hotstar. Sports, or something dramatic tonight?
+app.com.google.android.youtube.tv|Ahh. Going to watch the usual program?
+app.com.google.android.youtube.tvmusic|Shall I set the mood with some music?
+
+input.hdmi|Switching to HDMI. Going for gaming, huh?
+input.av|Going old school with AV, I see.
+input.tv|Live TV it is.
+input.usb|Let's see what's on the drive.
+
+idle.com.netflix.ninja|Hey. Do you want a suggestion? How about some Netflix tonight?
+idle.com.amazon.amazonvideo.livingroom|Still deciding? Perhaps a film on Prime Video.
+idle.in.startv.hotstar|Need a suggestion? There's always something new on Hotstar.
+idle.com.google.android.youtube.tv|Hey. Want me to open YouTube for you?
+
+sys.mute|Voice off. I'll keep my thoughts in writing.
+sys.unmute|Voice back on, sir.
+sys.settings|Tweaking the settings, are we?

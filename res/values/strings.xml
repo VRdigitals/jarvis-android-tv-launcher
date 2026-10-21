@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Home</string>
+    <string name="a11y_desc">Opens TV Home when the Home button is pressed. It only watches for the Google TV home screen and reads nothing else.</string>
+</resources>
