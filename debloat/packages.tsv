@@ -1,0 +1,64 @@
+# package	category	description
+# Categories:
+#   SAFE  preinstalled extras, ads, tracking or rarely used; safe to disable (pm disable-user, undoable)
+#   ASK   features some people use; only disable if the owner doesn't need it
+#   KEEP  needed for the TV to work; debloat.sh refuses to disable these
+# Anything not listed is shown as UNKNOWN and is left alone unless the owner is sure.
+# Mostly from a TCL Google TV (Android 12); additions for other brands welcome.
+
+tv.samba.ssm.ui	SAFE	Samba TV: watches what's on screen for ad targeting
+com.tcl.channelplus	SAFE	TCL Channel: ad-supported channels, pushes rows to the home screen
+com.tcl.waterfall.overseas	SAFE	TCL content feed: recommendations and ads
+com.tcl.messagebox	SAFE	TCL Message Box: promo pop-ups and notices
+com.tcl.usercenter	SAFE	TCL account (cloud login), runs in the background
+com.tcl.esticker	SAFE	e-Sticker: shop-floor promo stickers
+com.tcl.exhibit	SAFE	Store demo mode
+com.tcl.ocean.instructions	SAFE	e-Manual (built-in user manual)
+com.tcl.repairguide	SAFE	Repair guide (service helper)
+com.tcl.logkit	SAFE	TCL log collector (diagnostics/telemetry)
+com.tcl.hotelmenu	SAFE	Hotel mode (commercial setup)
+com.tcl.partnercustomizer	SAFE	TCL partner rows and the remote's T-button shortcuts on the Google TV home
+com.tcl.tv.tclhome_passive	SAFE	"TCL Home Passive" tile
+com.google.android.videos	SAFE	Google TV movie store / rentals
+com.google.android.play.games	SAFE	Google Play Games
+com.google.android.feedback	SAFE	Google feedback reporter
+com.android.printspooler	SAFE	Printing (TVs don't print)
+com.google.android.marvin.talkback	ASK	TalkBack screen reader (accessibility)
+com.tcl.hearaid	ASK	Hearing-aid audio (accessibility)
+com.tcl.smartalexa	ASK	Alexa control of the TV
+com.tcl.magiconnectfree	ASK	T-Cast / MagiConnect phone app link
+com.tcl.gamebar	ASK	Game Bar overlay in game mode
+com.tcl.airplay2	ASK	AirPlay from iPhone/Mac
+com.realtek.airplay2	ASK	AirPlay background service
+com.tcl.miracast	ASK	Screen mirroring (Miracast) from Android/Windows
+com.google.android.katniss	ASK	Google Assistant / voice search (the remote's mic button stops working)
+com.google.android.apps.mediashell	ASK	Chromecast built-in (phones can't cast to the TV)
+com.google.android.apps.tv.dreamx	ASK	Ambient Mode screensaver
+com.android.wallpaper.livepicker	ASK	Live wallpaper picker
+com.google.android.youtube.tvmusic	ASK	YouTube Music
+com.amazon.amazonvideo.livingroom	ASK	Prime Video
+com.netflix.ninja	ASK	Netflix
+com.google.android.youtube.tv	ASK	YouTube
+com.google.android.apps.tv.launcherx	KEEP	Google TV home: disabling it makes Google's setup app loop on Home
+com.google.android.tungsten.setupwraith	KEEP	Google TV setup and its recovery screen
+com.google.android.tv.remote.service	KEEP	Google TV remote service
+com.android.vending	KEEP	Play Store
+com.google.android.gms	KEEP	Google Play services
+com.google.android.gsf	KEEP	Google services framework
+com.android.tv.settings	KEEP	Settings
+com.android.systemui	KEEP	System UI
+com.android.providers.tv	KEEP	TV channels database
+com.android.bluetooth	KEEP	Bluetooth (remote, speakers)
+com.tcl.tv	KEEP	TCL Live TV / inputs player
+com.tcl.tvinput	KEEP	TCL inputs (HDMI, tuner)
+com.tcl.systemserver	KEEP	TCL system service
+com.tcl.providers.config	KEEP	TCL configuration
+com.tcl.globalkeyoverlay	KEEP	TCL remote button handling
+com.tcl.dashboard	KEEP	TCL quick-settings panel
+com.tcl.suspension	KEEP	TCL Quick Panel and input switcher
+com.tcl.inputmethod.international	KEEP	TCL keyboard
+com.google.android.inputmethod.latin	KEEP	Gboard
+com.google.android.tts	KEEP	Text-to-speech and voice input
+com.google.android.webview	KEEP	Web view used by apps
+com.realtek.power	KEEP	Chipset power management
+com.vr.tvhome	KEEP	This launcher

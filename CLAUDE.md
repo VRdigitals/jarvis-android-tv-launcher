@@ -26,7 +26,26 @@ Ask the user to do this with the remote (you can't):
 - `adb connect <ip>:5555`, and tell the user to **press Allow on the TV** (tick "Always allow").
   Confirm with `adb -s <ip>:5555 get-state` returning `device`.
 
-## 4. Personalise (ask; all optional)
+## 4. Clean up and speed up the TV (ask first; optional)
+Offer this before installing the launcher. Everything is reversible; nothing is uninstalled.
+1. `./debloat.sh <ip> audit`: note the **MemAvailable** figure as the "before" number, and show the
+   user a table of the SAFE and ASK apps with the plain-English descriptions (group them; don't
+   paste raw output). Mention that KEEP apps are needed by the TV and are never touched, and that
+   UNKNOWN system apps are left alone.
+2. Ask which SAFE apps to disable (suggest all), and ask about each ASK app they might use
+   (voice search, Chromecast, AirPlay, screensaver, streaming apps they don't use).
+3. Disable the approved ones: `./debloat.sh <ip> disable <pkg> ...` (or `./debloat.sh <ip> safe`
+   for all SAFE ones).
+4. Optional speed tweak, if they agree: instant system menus with
+   `adb -s <ip> shell settings put global window_animation_scale 0` and
+   `... transition_animation_scale 0`. Keep `animator_duration_scale` at 1 (the launcher's
+   animations need it).
+5. Restart (`adb -s <ip> reboot`), wait ~2 minutes, run `./debloat.sh <ip> memory` and show
+   before vs after. Some TVs (e.g. TCL) switch disabled apps back on after the first restart:
+   check with `./debloat.sh <ip> audit`, and if so run `./debloat.sh <ip> reapply`.
+6. Tell them `./debloat.sh <ip> undo` brings everything back.
+
+## 5. Personalise (ask; all optional)
 - Weather city → set `WEATHER_CITY`, `WEATHER_LAT`, `WEATHER_LON` in `src/com/vr/tvhome/Config.java`.
 - Favourite apps → list installed apps with `adb -s <tv> shell pm list packages -3` and update
   `FEATURED` in `Config.java` (keep 4–6).
@@ -37,7 +56,7 @@ Ask the user to do this with the remote (you can't):
 - Intro → replace `res/raw/intro.mp4` (convert to 1080p H.264 with
   `avconvert --preset Preset1920x1080` if needed).
 
-## 5. Build and install
+## 6. Build and install
 - `./make_voice.sh` (if the voice changed), then `./install.sh <ip>`.
 - The signing key is created automatically on the first build in `keystore/` (git-ignored).
   Updates must be signed with the same key: tell the user to keep that folder. If they lost it,
@@ -53,4 +72,5 @@ Ask the user to do this with the remote (you can't):
 - Never disable `com.google.android.apps.tv.launcherx`: Google's setup app then loops on Home.
 
 ## Undo
-`./uninstall.sh <ip>` turns off the Home override and removes the app.
+`./uninstall.sh <ip>` turns off the Home override and removes the app; `./debloat.sh <ip> undo`
+re-enables the apps that were disabled.

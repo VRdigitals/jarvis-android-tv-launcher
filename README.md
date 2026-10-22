@@ -33,6 +33,23 @@ when you select something. No ads, no "recommended for you" rows, no tracking.
 - **Ready to go**: ships with a hologram wallpaper, an arc-reactor avatar and an AI-generated
   assistant voice; swap in your own if you like.
 
+## Clean up and speed up your TV
+
+`debloat.sh` disables preinstalled bloatware (ads, tracking, demo modes, unused extras) to free
+memory. It **never uninstalls** anything, refuses to touch apps the TV needs, and undoes
+everything with one command. On the TCL TV it was built on, about **100 MB more memory** was free
+after a restart.
+
+```bash
+./debloat.sh <tv-ip> audit      # free memory + every app, sorted SAFE / ASK / KEEP with descriptions
+./debloat.sh <tv-ip> safe       # disable all SAFE apps (or: disable <package> ...)
+./debloat.sh <tv-ip> undo       # bring everything back
+```
+
+With Claude Code it's guided: Claude shows you the list in plain English and asks what to disable.
+The app list is in [debloat/packages.tsv](debloat/packages.tsv) (mostly TCL and Google TV for now;
+additions for other brands are welcome).
+
 ## Requirements
 
 - A Google TV or Android TV running **Android 12 or newer**. Tested on a TCL Google TV (Android 12).
@@ -76,8 +93,9 @@ on my TV"**. Following [CLAUDE.md](CLAUDE.md), Claude:
 1. checks for adb, Java and the Android SDK, and offers to install what's missing;
 2. walks you through turning on developer mode on the TV;
 3. finds your TV on the Wi-Fi and asks you to press Allow;
-4. asks for your city and favourite apps;
-5. then builds and installs everything.
+4. offers to clean up bloatware: shows you what's installed and asks what to disable;
+5. asks for your city and favourite apps;
+6. then builds and installs everything.
 
 ## Install by hand
 

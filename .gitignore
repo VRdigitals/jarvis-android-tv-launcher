@@ -10,3 +10,5 @@ assets/*
 
 .DS_Store
 release/
+debloat/disabled.txt
+debloat/log.txt
