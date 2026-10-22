@@ -79,7 +79,7 @@ No Gradle and no Android Studio needed: `build.sh` uses the SDK tools directly.
 6. Press **Home** on the remote.
 
 Good to know:
-- The weather finds your city automatically (approximate, from your internet connection).
+- On first launch it asks for your city (type it, pick from the matches). To change it later, select the weather card and press OK.
 - To change the featured apps, voice or wallpaper, use the computer setup below.
 - If animations feel stiff, check *Developer options → Animator duration scale* is **1x**.
 - To remove it: turn TV Home off in Accessibility, then *Settings → Apps → TV Home → Uninstall*.
@@ -114,7 +114,7 @@ on my TV"**. Following [CLAUDE.md](CLAUDE.md), Claude:
 
 | What | Where |
 |---|---|
-| Weather city | Detected automatically. To fix one, set `WEATHER_CITY`, `WEATHER_LAT`, `WEATHER_LON` in `src/com/vr/tvhome/Config.java` |
+| Weather city | Asked on first launch; select the weather card to change it. (Or fix one in `src/com/vr/tvhome/Config.java`) |
 | Featured apps | `Config.java` → `FEATURED` (package names + subtitles) |
 | What the assistant says | `voice/lines.txt` |
 | Assistant voice | Included in `voice/recorded/`. Replace or add `<key>.mp3` files (names from `voice/lines.txt`); lines without a recording appear as text only, or use a macOS voice for them: `VOICE=Daniel ./make_voice.sh` |

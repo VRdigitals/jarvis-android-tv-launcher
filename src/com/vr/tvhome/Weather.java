@@ -20,6 +20,7 @@ public final class Weather {
             + "?current=temperature_2m,weather_code,is_day"
             + "&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto";
     private static final String LOCATE = "https://ipapi.co/json/";
+    private static final String GEOCODE = "https://geocoding-api.open-meteo.com/v1/search?count=6&language=en&format=json&name=";
     private static final long RELOCATE_MS = 7L * 24 * 60 * 60_000;
     private static final String PREFS = "weather";
 
@@ -59,8 +60,62 @@ public final class Weather {
         }
     }
 
-    /** {city, lat, lon}: from Config, or detected from the connection and cached for a week. */
+    /** One match from a city search. */
+    public static final class Place {
+        public final String name, label;
+        public final double lat, lon;
+
+        Place(String name, String label, double lat, double lon) {
+            this.name = name;
+            this.label = label;
+            this.lat = lat;
+            this.lon = lon;
+        }
+    }
+
+    /** Looks a city up by name (Open-Meteo geocoding, free, no key). Blocking; returns [] if none. */
+    public static java.util.List<Place> search(String query) throws Exception {
+        java.util.List<Place> out = new java.util.ArrayList<>();
+        JSONObject json = getJson(GEOCODE + java.net.URLEncoder.encode(query.trim(), "UTF-8"));
+        org.json.JSONArray results = json.optJSONArray("results");
+        if (results == null) return out;
+        for (int i = 0; i < results.length(); i++) {
+            JSONObject r = results.getJSONObject(i);
+            String name = r.getString("name");
+            StringBuilder label = new StringBuilder(name);
+            String region = r.optString("admin1", "");
+            if (!region.isEmpty() && !region.equals(name)) label.append(", ").append(region);
+            String country = r.optString("country", "");
+            if (!country.isEmpty()) label.append(", ").append(country);
+            out.add(new Place(name, label.toString(), r.getDouble("latitude"), r.getDouble("longitude")));
+        }
+        return out;
+    }
+
+    /** The city the user picked; it overrides Config and automatic detection. */
+    public static void setUserPlace(Context ctx, Place place) {
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString("userCity", place.name)
+                .putString("userLat", String.valueOf(place.lat))
+                .putString("userLon", String.valueOf(place.lon)).apply();
+    }
+
+    /** Forget a typed city, so the place is detected from the connection again. */
+    public static void clearUserPlace(Context ctx) {
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .remove("userCity").remove("userLat").remove("userLon").remove("locAt").apply();
+    }
+
+    public static boolean hasUserPlace(Context ctx) {
+        return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).contains("userCity");
+    }
+
+    /** {city, lat, lon}: the user's typed city, else Config, else detected from the connection (cached a week). */
     private static String[] place(Context ctx) throws Exception {
+        SharedPreferences up = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (up.contains("userCity")) {
+            return new String[]{up.getString("userCity", ""), up.getString("userLat", "0"), up.getString("userLon", "0")};
+        }
         if (!Config.WEATHER_CITY.isEmpty()) {
             return new String[]{Config.WEATHER_CITY, String.valueOf(Config.WEATHER_LAT), String.valueOf(Config.WEATHER_LON)};
         }

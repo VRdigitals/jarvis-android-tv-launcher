@@ -2,9 +2,11 @@ package com.vr.tvhome;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -29,12 +31,15 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.inputmethod.EditorInfo;
+import android.view.WindowManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -154,6 +159,7 @@ public class MainActivity extends Activity {
         super.onResume();
         assistant.onShown();
         if (appsPage.getVisibility() != View.VISIBLE) focusFeatured();
+        handler.postDelayed(this::maybeAskCity, 1500);
     }
 
     @Override
@@ -440,7 +446,112 @@ public class MainActivity extends Activity {
         text.addView(weatherDesc);
         text.addView(weatherRange);
         card.addView(text);
-        return card;
+        card.setFocusable(true);
+        card.setClickable(true);
+        return FocusFx.wrap(card, dp(196), dp(112), dp(14), 1.04f, false, () -> showCityDialog(false));
+    }
+
+    /** Fetches the weather now (after the city changes). */
+    private void refreshWeather() {
+        new Thread(() -> {
+            Weather w = Weather.fetch(MainActivity.this);
+            if (w != null) runOnUiThread(() -> showWeather(w));
+        }).start();
+    }
+
+    /**
+     * First launch: ask where the user is, so the weather card shows their city. Shown once;
+     * the weather card can be selected later to change it. Returns true if the dialog was shown.
+     */
+    private boolean maybeAskCity() {
+        SharedPreferences prefs = getSharedPreferences("setup", MODE_PRIVATE);
+        if (prefs.getBoolean("cityAsked", false) || Weather.hasUserPlace(this) || isFinishing()) return false;
+        prefs.edit().putBoolean("cityAsked", true).apply();
+        showCityDialog(true);
+        return true;
+    }
+
+    private void showCityDialog(boolean firstRun) {
+        final EditText input = new EditText(this);
+        input.setSingleLine(true);
+        input.setHint("City, e.g. London");
+        input.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        FrameLayout box = new FrameLayout(this);
+        box.setPadding(dp(24), dp(8), dp(24), 0);
+        box.addView(input);
+
+        final AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle(firstRun ? "Welcome! Where are you?" : "Change location")
+                .setMessage(firstRun
+                        ? "Type your city to show its weather. (If you skip, it's guessed from your internet connection.)"
+                        : "Type your city to show its weather.")
+                .setView(box)
+                .setPositiveButton("Search", null) // set below so the dialog stays open if nothing matches
+                .setNeutralButton("Detect automatically", (d, w) -> {
+                    Weather.clearUserPlace(this);
+                    weatherCity.setText("Weather");
+                    refreshWeather();
+                })
+                .setNegativeButton(firstRun ? "Skip" : "Cancel", null)
+                .create();
+        dialog.setOnShowListener(x -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(v -> searchCity(dialog, input)));
+        input.setOnEditorActionListener((v, actionId, e) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
+                searchCity(dialog, input);
+                return true;
+            }
+            return false;
+        });
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
+        input.requestFocus();
+    }
+
+    private void searchCity(final AlertDialog dialog, EditText input) {
+        final String query = input.getText().toString().trim();
+        if (query.isEmpty()) {
+            Toast.makeText(this, "Type a city name first", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(this, "Searching…", Toast.LENGTH_SHORT).show();
+        new Thread(() -> {
+            List<Weather.Place> found = null;
+            try {
+                found = Weather.search(query);
+            } catch (Exception e) {
+                // network problem: found stays null
+            }
+            final List<Weather.Place> results = found;
+            runOnUiThread(() -> {
+                if (results == null) {
+                    Toast.makeText(this, "Can't reach the internet. Check the TV's Wi-Fi.", Toast.LENGTH_LONG).show();
+                } else if (results.isEmpty()) {
+                    Toast.makeText(this, "No match. Try just the city name.", Toast.LENGTH_LONG).show();
+                } else if (results.size() == 1) {
+                    choosePlace(results.get(0));
+                    dialog.dismiss();
+                } else {
+                    String[] labels = new String[results.size()];
+                    for (int i = 0; i < labels.length; i++) labels[i] = results.get(i).label;
+                    new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                            .setTitle("Which one?")
+                            .setItems(labels, (d, which) -> {
+                                choosePlace(results.get(which));
+                                dialog.dismiss();
+                            })
+                            .setNegativeButton("Back", null)
+                            .show();
+                }
+            });
+        }).start();
+    }
+
+    private void choosePlace(Weather.Place place) {
+        Weather.setUserPlace(this, place);
+        weatherCity.setText(place.name);
+        refreshWeather();
+        Toast.makeText(this, "Weather set to " + place.label, Toast.LENGTH_SHORT).show();
     }
 
     private void showWeather(Weather w) {
